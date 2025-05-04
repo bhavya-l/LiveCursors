@@ -23,12 +23,15 @@ const handleMessage = (bytes, userId) => {
     const message = JSON.parse(bytes.toString())
     const user = users[userId]
     user.state = message
-
+    
     broadcast()
 }
 
 const handleClose = userId => {
+    delete connections[userId]
+    delete users[userId]
 
+    broadcast()
 }
 
 wsServer.on("connection", (connection, request) => {
@@ -41,7 +44,6 @@ wsServer.on("connection", (connection, request) => {
         username,
         state: {}
     }
-
     connection.on("message", message => handleMessage(message, userId))
     connection.on("close", () => handleClose(userId))
 })
